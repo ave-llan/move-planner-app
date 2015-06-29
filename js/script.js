@@ -17,11 +17,13 @@ function loadData() {
 
     var streetAddress = $street.val();
     var cityAddress = $city.val();
-    console.log(streetAddress);
-    console.log(cityAddress);
+    var address = streetAddress + ', ' + cityAddress;
+    console.log(address);
+
+    $greeting.text('So, you want to live at ' + address + '?');
 
     var imgURL = 'https://maps.googleapis.com/maps/api/streetview?size=600x300&location=';
-    imgURL += streetAddress + ', ' + cityAddress;
+    imgURL += address;
     console.log(imgURL);
     $body.append('<img class="bgimg" src="' + imgURL + '">');
 
