@@ -1,4 +1,5 @@
 
+
 function loadData() {
 
     var $body = $('body');
@@ -17,15 +18,26 @@ function loadData() {
 
     var streetAddress = $street.val();
     var cityAddress = $city.val();
+
     var address = streetAddress + ', ' + cityAddress;
-    console.log(address);
-
     $greeting.text('So, you want to live at ' + address + '?');
-
     var imgURL = 'https://maps.googleapis.com/maps/api/streetview?size=600x400&location=';
     imgURL += address;
-    console.log(imgURL);
     $body.append('<img class="bgimg" src="' + imgURL + '">');
+
+    // load new york times articles about this city
+    var nytAPI = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?fq=glocations("' +
+        cityAddress + '")&api-key=2c5d61d769d51f6765f05168036cc94b:18:65453603';
+    $.getJSON(nytAPI, function(data) {
+       data.response.docs.forEach(function(story) {
+        $nytHeaderElem.text('New York Times articles about ' + cityAddress);
+        $nytElem.append(
+            '<li class="article">' +
+            '<a href="' + story.web_url + '">' + story.headline.main + '</a>' +
+            '<p>' + story.lead_paragraph + '</p></li>'
+            )
+       })
+    });
 
     return false;
 };
