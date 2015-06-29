@@ -1,3 +1,8 @@
+// get new york times api key
+var nytAPIkey;
+$.getJSON('api_keys.json', function(data) {
+    nytAPIkey = data.nyTimes;
+})
 
 
 function loadData() {
@@ -27,7 +32,7 @@ function loadData() {
 
     // load new york times articles about this city
     var nytAPI = 'http://api.nytimes.com/svc/search/v2/articlesearch.json?fq=glocations("' +
-        cityAddress + '")&api-key=2c5d61d769d51f6765f05168036cc94b:18:65453603';
+        cityAddress + '")&api-key=' + nytAPIkey;
     $.getJSON(nytAPI, function(data) {
        data.response.docs.forEach(function(story) {
         $nytHeaderElem.text('New York Times articles about ' + cityAddress);
@@ -41,6 +46,36 @@ function loadData() {
     .error(function() {
         console.log("an error occurred loading NYTimes articles");
         $nytHeaderElem.text('New York Times articles could not be loaded.');
+    });
+
+
+    // load wikipedia articles about this city
+
+    // if request has not completed in 8 seconds, handle as an error
+    var wikiRequestTimeout = setTimeout(function(){
+        $wikiElem.text("failed to get wikipedia resources");
+    }, 8000);
+
+    var wikiAPI = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' +
+                    cityAddress + '&format=json&callback=wikiCallback';
+    $.ajax({
+        url: wikiAPI,
+        dataType: "jsonp",
+        success: function(data) {
+            console.log(data);
+            var articleList = data[1];
+            articleList.forEach(function(article) {
+                var url = 'http://en.wikipedia.org/wiki/' + article;
+                $wikiElem.append(
+                    '<li>' +
+                    '<a href="' + url + '">' + article + '</a>' +
+                    '</li>'
+                )
+            });
+
+            // success, so clear timeout
+            clearTimeout(wikiRequestTimeout);
+        }
     });
 
     return false;
