@@ -37,6 +37,10 @@ function loadData() {
             '<p>' + story.lead_paragraph + '</p></li>'
             )
        })
+    })
+    .error(function() {
+        console.log("an error occurred loading NYTimes articles");
+        $nytHeaderElem.text('New York Times articles could not be loaded.');
     });
 
     return false;
